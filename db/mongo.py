@@ -5,7 +5,7 @@ from cfg.config import MONGO_URL
 
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = client['arcanerealms']
+db = client['nlpbot']
 users = db['users']
 
 
