@@ -16,9 +16,12 @@ async def start_bot(data: dict):
 
 
 async def answer(data: dict):
-    input_ids = tokenizer.encode(data['message']['text'] + tokenizer.eos_token, return_tensors='pt')
-    chat_ids = model.generate(input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
-    response = tokenizer.decode(chat_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True)
+    if 'text' in data['message'].keys():
+        input_ids = tokenizer.encode(data['message']['text'] + tokenizer.eos_token, return_tensors='pt')
+        chat_ids = model.generate(input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
+        response = tokenizer.decode(chat_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True)
+    else:
+        response = 'I do not understand you...'
     return response
 
 
