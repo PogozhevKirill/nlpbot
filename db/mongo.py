@@ -5,8 +5,8 @@ from cfg.config import MONGO_URL
 
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-mongo_db = client['arcanerealms']
-mongo_users = db['users']
+db = client['arcanerealms']
+users = db['users']
 
 
 async def do_insert_one(document: dict, collection: motor.motor_asyncio.AsyncIOMotorCollection) -> None:
