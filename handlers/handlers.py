@@ -1,29 +1,25 @@
 import json
+import torch
+import transformers
 
 from db.mongo import users, do_find_one, do_insert_one, do_find_many, do_delete_one
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-async def enter_username(data: dict):
-    current_char = await do_find_one({'_id': data['message']['chat']['id']}, users)
-    if current_char is None:
-        await do_insert_one({'_id': data['message']['chat']['id'],
-                             'name': data['message']['text']}, users)
-        return 'Персонаж **{}** успешно создан!'.format(data['message']['text'])
-    return None
+tokenizer = AutoTokenizer.from_pretrained("microsoft/DialoGPT-medium", padding_side='left')
+model = AutoModelForCausalLM.from_pretrained("microsoft/DialoGPT-medium")
 
 
-async def get_users_list():
-    users_list = await do_find_many({}, users)
-    return str(users_list)
+async def start_bot(data: dict):
+    return "Hello! I'm a simple GPT2 chat bot which was designed as a homework project for 'NLP and ChatBots course'" \
+           " at Synergy University. I understand only English words and store some dialogue history. Ask me something."
 
 
-async def delete_user(data: dict):
-    current_char = await do_find_one({'_id': data['message']['chat']['id']}, users)
-    if current_char is not None:
-        await do_delete_one({'_id': data['message']['chat']['id']}, users)
-        return 'Персонаж **{}** успешно удален!'.format(current_char['name'])
-    else:
-        return 'Вы еще не создали персонажа. Чтобы начать используйте /start'
+async def answer(data: dict):
+    input_ids = tokenizer.encode(data['message']['text'] + tokenizer.eos_token, return_tensors='pt')
+    chat_ids = model.generate(input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
+    response = tokenizer.decode(chat_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True)
+    return response
 
 
 async def message_handle(data: dict) -> dict:
@@ -35,10 +31,8 @@ async def message_handle(data: dict) -> dict:
 
     # /start
     if command == '/start':
-        message['text'] = await enter_username(data)
-    if command == '/get_users':
-        message['text'] = await get_users_list()
-    if command == '/delete_user':
-        message['text'] = await delete_user(data)
+        message['text'] = await start_bot(data)
+    else:
+        message['text'] = await answer(data)
 
     return message

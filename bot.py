@@ -34,8 +34,8 @@ async def bot():
     logging.basicConfig(level=logging.DEBUG)
     app = web.Application(middlewares=[])
     app.router.add_post(TELEGRAM_WEBHOOK, handler)
-    # if ADMIN_MODE:
-    #     app.middlewares.append(middleware_debug_admin)
+    if ADMIN_MODE:
+        app.middlewares.append(middleware_debug_admin)
 
     message = {
         'chat_id': ADMIN_CHAT_ID,
