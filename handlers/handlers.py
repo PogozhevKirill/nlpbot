@@ -16,26 +16,26 @@ async def start_bot(data: dict):
 
 
 async def answer(data: dict):
-    if 'text' in data['message'].keys():
-        input_ids = tokenizer.encode(data['message']['text'] + tokenizer.eos_token, return_tensors='pt')
-        chat_ids = model.generate(input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
-        response = tokenizer.decode(chat_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True)
-    else:
-        response = 'I do not understand you...'
+    input_ids = tokenizer.encode(data['message']['text'] + tokenizer.eos_token, return_tensors='pt')
+    chat_ids = model.generate(input_ids, max_length=500, pad_token_id=tokenizer.eos_token_id)
+    response = tokenizer.decode(chat_ids[:, input_ids.shape[-1]:][0], skip_special_tokens=True)
     return response
 
 
 async def message_handle(data: dict) -> dict:
-    command = data['message']['text']
-    message = {
-        'chat_id': data['message']['chat']['id'],
-        'text': None
-    }
+    if 'text' in data['message'].keys():
+        command = data['message']['text']
+        message = {
+            'chat_id': data['message']['chat']['id'],
+            'text': None
+        }
 
-    # /start
-    if command == '/start':
-        message['text'] = await start_bot(data)
+        # /start
+        if command == '/start':
+            message['text'] = await start_bot(data)
+        else:
+            message['text'] = await answer(data)
     else:
-        message['text'] = await answer(data)
+        message = 'I do not understand you...'
 
     return message
