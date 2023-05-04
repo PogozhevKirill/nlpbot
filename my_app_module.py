@@ -30,7 +30,7 @@ async def handler(request):
     return web.Response(status=200)
 
 
-async def bot():
+async def my_web_app():
     logging.basicConfig(level=logging.DEBUG)
     app = web.Application(middlewares=[])
     app.router.add_post(TELEGRAM_WEBHOOK, handler)
