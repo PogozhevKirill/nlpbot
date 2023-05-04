@@ -1,6 +1,7 @@
 import json
 import torch
 import transformers
+import logging
 
 from db.mongo import users, do_find_one, do_insert_one, do_find_many, do_delete_one
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -8,6 +9,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("microsoft/DialoGPT-medium", padding_side='left')
 model = AutoModelForCausalLM.from_pretrained("microsoft/DialoGPT-medium")
+logging.basicConfig(level=logging.DEBUG)
 
 
 async def start_bot(data: dict):
@@ -26,6 +28,7 @@ async def answer(data: dict):
 
 
 async def message_handle(data: dict) -> dict:
+    logging.warning("message_handle: {}".format(data['message']))
     if 'text' in data['message'].keys():
         command = data['message']['text']
         message = {

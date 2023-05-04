@@ -18,7 +18,7 @@ async def handler(request):
     data = await request.json()
     logging.info(str(data))
     message = await message_handle(data)
-    if message['text'] is not None:
+    if 'text' in message and message['text'] is not None:
         async with ClientSession() as session:
             async with session.post(API_URL,
                                     data=json.dumps(message),
