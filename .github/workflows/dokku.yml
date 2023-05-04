@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3.3.0
+      with:
+          fetch-depth: 0
+
+    - id: deploy
+      name: Deploy to dokku
+      uses: dokku/github-action@v1.4.0
+      with:
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          git_remote_url: 'ssh://dokku@arcanerealms.ru:22/nlpbot'
+          git_push_flags: '--force'
