@@ -41,6 +41,8 @@ async def bot():
         'chat_id': ADMIN_CHAT_ID,
         'text': 'Bot successfully started!'
     }
+    logging.warning("API_URL: {}".format(API_URL))
+    logging.warning("message: {}".format(json.dumps(message)))
     async with ClientSession() as session:
         async with session.post(API_URL,
                                 data=json.dumps(message),
